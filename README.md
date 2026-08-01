@@ -162,8 +162,8 @@ connection. No manual configuration is needed.
 | Azure DevOps Server 2020 | v6.1 / v6.0 | Full support |
 | Azure DevOps Server 2019 | v5.1 / v5.0 | Full support (some features with fallback) |
 
-For detailed per-feature compatibility information, see the project's
-[COMPATIBILITY.md](https://github.com/your-repo/AzureDevOps/blob/main/COMPATIBILITY.md).
+For detailed per-feature compatibility information, see
+[COMPATIBILITY.md](https://github.com/MohamedElNady/Azure-DevOps-Extension/blob/main/COMPATIBILITY.md).
 
 ---
 
@@ -260,6 +260,6 @@ connections carry over; if they don't appear, re-add the connection once and it 
 
 ## Support
 
-- **Source code & issues:** [GitHub repository](https://github.com/your-repo/AzureDevOps)
-- **Bug reports:** Open a GitHub issue with your ADO version, Studio Pro version, and steps to reproduce
-- **Feature requests:** Open a GitHub discussion or issue tagged `enhancement`
+- **Downloads & releases:** [github.com/MohamedElNady/Azure-DevOps-Extension/releases](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases)
+- **Bug reports:** [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new) with your Azure DevOps version, Studio Pro version, and steps to reproduce
+- **Feature requests:** [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new) labelled `enhancement`
