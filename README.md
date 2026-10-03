@@ -8,6 +8,10 @@ with your existing Azure DevOps credentials.
 
 Works with **Azure DevOps Services (cloud)** and **Azure DevOps Server (on-premises, 2019 and later)**.
 
+[![Watch the 3.0 overview (3 min)](media/v3.0-video-cover.jpg)](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)
+
+▶ **[Watch the 3.0 overview](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)** — 3 minutes, 1080p. All data in the video is invented demo data.
+
 ---
 
 ## Why This Extension?
