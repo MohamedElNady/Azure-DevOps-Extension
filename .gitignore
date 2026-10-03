@@ -1,0 +1,3 @@
+
+# Module packages are published as GitHub release assets, never committed.
+*.mxmodule

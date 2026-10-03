@@ -21,6 +21,24 @@ embedding the full ADO experience where you already work.
 
 ## Key Features
 
+### Built For Studio Pro, Not Just Embedded In It
+
+Four things this does that no browser-based Azure DevOps client can:
+
+- **Knows which branch you're on.** The panel reads the Git branch of the app you have open and
+  shows it above every tab, with the pull request from that branch and its latest build status —
+  both clickable, nothing to configure. Switch branches outside Studio Pro and it catches up as
+  soon as you click back in. Hidden automatically for apps that aren't Git working copies.
+- **Tells you inside the modeller.** Failed builds you queued, pull requests waiting on your
+  review and pending approvals raise a native Studio Pro notification — with the panel closed,
+  or not even visible.
+- **Opens the document.** Link a work item to a module or document, then click **Open** to
+  focus that microflow, page or entity in Studio Pro. Module and document fields are pickers
+  backed by your live model, not free text.
+- **Sets up your build.** Generates an `azure-pipelines.yml` for the app with the Studio Pro
+  version and `.mpr` filename already filled in — the two things hand-written Mendix pipelines
+  get wrong most often — and commits it for you after you've reviewed it.
+
 ### Work Items & Kanban Board
 
 - **List view** and **Kanban board** with drag-and-drop between state columns
@@ -34,7 +52,10 @@ embedding the full ADO experience where you already work.
 ### CI/CD Pipelines
 
 - Browse build definitions by folder, trigger builds, and view run history
+- **Star your pipelines** — favorites pin to the top of the list, saved per project
 - **Live log streaming** — auto-scrolls while a build is in progress
+- **Retry a single failed build stage** instead of re-running the whole pipeline — the stages
+  that already passed keep their results (multi-stage YAML pipelines, ADO Services or Server 2020+)
 - Download build artifacts directly from the panel
 - View test results (pass/fail/skip) per build
 - Full release pipeline support: create releases, monitor environments per stage
@@ -70,12 +91,31 @@ embedding the full ADO experience where you already work.
 - Save and switch between multiple Azure DevOps project connections
 - Each connection has its own name, organization URL, project, PAT, and default repository
 - Switch projects instantly from the header — all tabs reload automatically
+- Favorites are remembered per project, so switching never shows the wrong pipelines
+
+### Find Anything
+
+- **Full-text search** across work items — finds text in descriptions, comments and custom
+  fields, not just titles
+- **Code and wiki search** across the project's repositories
+- **`Ctrl+K` command palette** — jump to any tab, open a starred pipeline, switch theme, or
+  search without touching the mouse
+- Global search with `/`, and keyboard shortcuts for every tab (`G` then `H`/`W`/`P`/`R`)
+
+### Work Out Why Builds Fail
+
+- **Search build logs across runs** — plain text or regular expression, optionally failed runs
+  only. Azure DevOps has no way to do this from its web UI.
+- **Failure clustering** groups recent failed builds by what actually broke, normalising away
+  paths, timestamps and ids — so one flaky step shows as a single cluster of ten builds instead
+  of ten separate red rows
 
 ---
 
 ## Requirements
 
-- **Mendix Studio Pro** 10.12 or later (Windows only)
+- **Mendix Studio Pro 10.24**, or **Studio Pro 11.12 (LTS) and later** — Windows only.
+  Each line has its own build; install the one matching your Studio Pro
 - **Azure DevOps Services** (cloud) — any region
 - **Azure DevOps Server** 2019, 2020, or 2022 (on-premises)
 - A Personal Access Token (PAT) with the scopes listed below
@@ -90,6 +130,11 @@ embedding the full ADO experience where you already work.
 4. Click **Download** on the extension listing
 5. Accept the trust dialog when prompted
 6. The **Azure DevOps** item appears in the **Extensions** menu
+
+**Installing manually:** download the module package for your Studio Pro from
+[Releases](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases). There is one for
+**Studio Pro 10.24** and one for **Studio Pro 11.12 and later**. They are not interchangeable.
+Use **App → Import module package**, then restart Studio Pro.
 
 ---
 
@@ -130,11 +175,14 @@ port automatically rather than failing to start.
 | Scope | Required for |
 |---|---|
 | Work Items — Read & Write | Work items, comments, attachments, inline images |
-| Build — Read | Build list, live logs, artifact downloads, test results |
+| Build — Read & execute | Build list, live logs, artifacts, test results, log search; *execute* to retry a failed stage |
 | Release — Read & Write | Release list, logs, retry stage, approvals |
-| Code — Read | Pull requests, repositories, branches |
+| Code — Read & write | Pull requests, repositories, branches, code search; *write* to commit a generated pipeline |
 | Graph — Read | Team member list, @mention lookup |
 | Wiki — Read & Write | Wiki page read and edit |
+
+The two *execute* / *write* additions are only needed for those two actions — a read-only Build
+or Code scope keeps everything else working.
 
 ---
 
@@ -206,6 +254,36 @@ Studio Pro last loaded it. If **DLL built** is newer than **Loaded at**, restart
 ---
 
 ## Release Notes
+
+### 3.0.0 — October 2026
+
+A workflow release, built around the panel knowing it runs inside Studio Pro with a Mendix app
+open. Full notes: `RELEASE_NOTES.md`.
+
+**Mendix-aware**
+- Branch context bar — the open app's Git branch, its pull request, and its latest build, with
+  no configuration
+- Native Studio Pro notifications for failed builds, review requests and pending approvals
+- Open the Mendix document a work item is linked to, straight from the work item
+- Generate and commit an `azure-pipelines.yml` for the app
+
+**Pipelines**
+- Retry a single failed build stage instead of re-running the whole pipeline
+- Search build log contents across recent runs
+- Group repeated failures by root cause
+- Star build and release pipelines; favorites pin to the top and are saved per project
+
+**Search & navigation**
+- Full-text work item search, plus code and wiki search
+- `Ctrl+K` command palette for navigation, favorites, actions, and search
+
+**Platform**
+- Now runs on **Studio Pro 11.12 (LTS) and later**, alongside 10.24 — one build per line
+
+**Upgrading:** install the build for your Studio Pro and restart it. No breaking changes —
+connections, PATs, and port settings carry over untouched. Mendix module links are migrated to a
+per-app store. Retrying a build stage and committing a generated pipeline need two wider PAT
+scopes (see *Required PAT Scopes*); everything else works with your existing PAT.
 
 ### 2.0.0 — August 2026
 

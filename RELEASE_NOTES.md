@@ -1,5 +1,257 @@
 # Release Notes
 
+## 3.0.0 — 2026-10-03
+
+A workflow release, built around one idea: the panel should know it is running inside Studio
+Pro, with a Mendix app open.
+
+It now shows the branch you are modelling on, tells you about failed builds and review requests
+through native Studio Pro notifications, opens the Mendix document a work item is linked to,
+generates a build pipeline for the app, searches text across build logs, groups repeated
+failures by cause, and adds a `Ctrl+K` command palette. And it now runs on **Studio Pro 11.12+**
+as well as 10.24.
+
+**No breaking changes.** Nothing was removed and no API contract changed — upgrading from
+2.0.0 is a drop-in replacement.
+
+---
+
+### At a glance
+
+| Feature | Where | Needs |
+|---|---|---|
+| Branch context bar | Above every tab | A Git working copy |
+| Studio Pro notifications | Bell in header + native pop-ups | — |
+| Open Mendix document | Work item → Mendix Module Links | An open app |
+| Mendix pipeline scaffolder | Pipelines → Setup | Git repo write access |
+| Full-text + code search | Global search, `Ctrl+K` | Search extension for code/wiki |
+| Build log search | Pipelines → Analysis | — |
+| Failure clustering | Pipelines → Analysis | — |
+| Retry a single stage | Run detail → Timeline | Server 2020+, multi-stage YAML |
+| Favorite pipelines | Pipelines sidebar | — |
+| Command palette | `Ctrl+K` anywhere | — |
+
+---
+
+### Added
+
+#### Branch context bar
+
+A thin row under the tabs shows the Git branch of the Mendix app you have open, the pull
+request opened from that branch, and its most recent build — each clickable.
+
+There is nothing to configure. The extension already locates your app root to store
+`settings.json` there, so it reads `.git` from the same place. Switch branches outside Studio
+Pro and the bar catches up the moment you click back into the panel.
+
+- The pull request and build are looked up **only when the app's Git remote is a repository in
+  the Azure DevOps project you're connected to**, and only in that repository. A branch called
+  `main` exists in every repository; without this, an app on Mendix Team Server would be shown
+  some other pipeline's `main` build as if it were its own. Every Azure DevOps remote form is
+  recognised — HTTPS, SSH, the legacy `*.visualstudio.com` host and on-premises collection URLs.
+- When there's nothing to show, the bar says why — *Mendix Team Server*, *repo not in this
+  project*, *not an Azure DevOps repo* — instead of a misleading "no open PR".
+- Apps that are not Git working copies — Team Server (SVN), or an app whose root can't be
+  located — show no bar at all rather than an empty row or an error.
+- A detached `HEAD` shows the short commit SHA and skips the pull request and build lookups,
+  since there is no branch ref to match against.
+- Git worktrees and `packed-refs` are both handled.
+
+#### Retry a single build stage
+
+A failed stage in a multi-stage YAML pipeline now has a **Retry** button in the run's Timeline
+tab. Only that stage re-runs; stages that already succeeded keep their results. Previously the
+only option was re-queueing the whole pipeline — on a Mendix build that means paying for the
+`mxbuild` step again just to retry a flaky deployment step.
+
+The run keeps updating live after the retry, without reopening it.
+
+**Requires Azure DevOps Services or Server 2020+, and a multi-stage YAML pipeline.** On older
+servers, and for classic or single-stage pipelines, the button does not appear — there is no
+stage of their own to retry. Release stage retry, available since 1.1.0, is unaffected.
+
+Azure DevOps can accept a retry request and then not restart anything (it answers with success
+for a stage that isn't retryable). The extension checks that the build really restarted before
+saying so, and tells you plainly when it didn't.
+
+#### Favorite pipelines
+
+Hover any build or release pipeline and click the star. Starred pipelines get a pinned
+**Favorites** group at the top of the sidebar, and appear in the command palette.
+
+Favorites are saved per connection and per app, alongside `settings.json`, so they survive a
+Studio Pro restart. Switching projects shows that project's favorites — pipeline IDs collide
+between projects, so a shared list would show the wrong names against the wrong pipelines.
+
+#### Command palette
+
+`Ctrl+K` (`Cmd+K` on macOS keyboards) opens a palette over the panel:
+
+- **Navigate** — jump to any tab; matching is by subsequence, so `wi` finds Work Items
+- **Favorites** — open a starred pipeline directly
+- **Actions** — open Settings, switch theme, focus search, reload the panel
+- **Results** — live search across work items, pipelines and pull requests as you type
+
+Arrow keys move, `Enter` opens, `Esc` closes. It opens even when the search box has focus.
+
+#### Studio Pro notifications
+
+The extension now watches for the three things that interrupt a working day and raises a
+**native Studio Pro notification** for each — so you are told with the Azure DevOps panel
+closed, or not even visible:
+
+- a build **you** queued failed in the last 24 hours
+- a pull request is waiting on **your** review (your own PRs and drafts are excluded)
+- a build or release approval is pending
+
+A bell in the panel header shows the same feed with an unread count, and clicking an item goes
+straight to it.
+
+Events are identified by a stable id rather than a timestamp, because server and client clocks
+disagree and Azure DevOps backfills `finishTime` — a repeated or missed pop-up is exactly what
+makes a notifier untrustworthy. The first poll after startup establishes a baseline silently,
+so launching Studio Pro never replays a backlog of pop-ups at you. At most three pop-ups are
+raised per cycle; beyond that you get one "N more items need attention".
+
+#### Open the Mendix document a work item is linked to
+
+**Mendix Module Links** on a work item stopped being a notepad. With an app open, the module
+and document fields are now **pickers backed by the live model** instead of free text, and every
+saved link gets an **Open** button that focuses that microflow, page or entity in Studio Pro.
+A link with no document opens the module's domain model.
+
+This is the payload no browser-based Azure DevOps client can deliver.
+
+Links are now stored **per app**, beside `settings.json`. Until now they lived in one global
+file keyed only by work item id, so they bled across apps and across projects with overlapping
+ids. That was invisible while links were only ever displayed; now that clicking one opens a
+document, a leaked link resolves to "module not in this app". Existing links are migrated once.
+
+Links are stored by name, so renaming a document in Studio Pro orphans its link — the Open
+button then says so plainly rather than failing silently.
+
+#### Mendix build pipeline scaffolder
+
+**Pipelines → Setup** generates an `azure-pipelines.yml` for the open app, with the Studio Pro
+version and `.mpr` filename filled in from the model — the two things hand-written Mendix
+pipelines get wrong most often. Two flavours:
+
+| Target | Runs on | mxbuild from |
+|---|---|---|
+| Self-hosted Windows | Your own agent pool | The Studio Pro install on the agent |
+| Hosted Linux | `ubuntu-latest` | Mendix CDN tarball, per run |
+
+The YAML is shown in full for review first; committing it is a separate, explicit action that
+names the repository, branch and file it will write. Committing uses the branch tip as an
+optimistic concurrency check, so it cannot quietly overwrite someone else's commit, and it
+refuses to replace an existing file unless you tick the box.
+
+This produces a **starting template, not a finished pipeline.** Agent pool names, service
+connections and deployment targets are site-specific and are emitted as clearly marked TODOs.
+
+#### Real search
+
+Work item search now goes through the Azure DevOps **Search service**, which does
+relevance-ranked full-text matching — it finds text in descriptions, comments and custom
+fields, none of which WIQL can query. **Code** and **wiki** search were added on the same path.
+
+Pipelines and pull requests have no search API and remain a name filter over a listing, but
+that is now a deliberate fallback rather than the whole feature.
+
+On Azure DevOps Server the Search service is a separately installed extension. Availability is
+probed once and remembered; when it is absent, work item search falls back to the previous
+title-only query and the results panel explains why code and wiki results are missing, instead
+of silently returning nothing.
+
+#### Build log search
+
+**Pipelines → Analysis → Log search** searches the *contents* of recent build logs — plain text
+or regular expression, optionally restricted to failed runs. Azure DevOps has no API for this;
+it is assembled by fetching logs across builds, so the number of builds to scan is a visible
+control rather than a hidden default.
+
+#### Failure clustering
+
+**Pipelines → Analysis → Failure clusters** groups recent failed builds by what actually broke.
+Error text is normalised — paths, GUIDs, timestamps, hex addresses and line numbers stripped —
+so the same fault across ten runs shows as one cluster of ten rather than ten separate red rows.
+Expand a cluster to see the builds and jump to any of them.
+
+---
+
+#### Studio Pro 11 support
+
+3.0.0 ships as **two builds**, because the two Studio Pro lines run on different .NET runtimes
+and an extension is loaded into Studio Pro's own process:
+
+| Studio Pro | Runtime | Package |
+|---|---|---|
+| 10.24 | .NET 8 | Studio Pro 10.24 package |
+| 11.12 (LTS) and later | .NET 10 | Studio Pro 11.12+ package |
+
+Both have identical features. The 11.12+ package does not load in 10.24, and the 10.24 package
+is not supported on Studio Pro 11. Install the one that matches your
+Studio Pro; **Settings → Build** shows `sp10` or `sp11` in the backend stamp so you can confirm
+which one loaded.
+
+---
+
+### Changed
+
+- **Supported Studio Pro versions are now 10.24 and 11.12+.** Earlier listings said "10.12 or
+  later", but the extension has always been compiled against 10.24, and 3.0.0 uses Studio Pro
+  services that were not verified on earlier versions.
+- **Two new PAT scopes for two features.** *Build — Read & execute* to retry a build stage, and
+  *Code — Read & write* to commit a generated pipeline. Existing PATs keep working; only those
+  two actions need the wider scope.
+- The **Settings → Build** panel now reports `3.0.0+sp10.build.yyMMdd.HHmmss` (or `sp11`) as
+  the backend stamp.
+- Global search results are reachable from the command palette in addition to the search box.
+- **Mendix module links moved** from a single global file to a per-app store beside
+  `settings.json`. Existing links migrate automatically on first run.
+- The extension now requests one additional Studio Pro service (`INotificationPopupService`).
+- **Readable Azure DevOps errors.** Failures used to surface as the raw JSON Azure DevOps
+  returns — hundreds of characters with the actual reason buried inside. They're now one
+  sentence. An expired or rejected PAT says exactly that and points you to the Settings tab.
+- **An expired PAT no longer fails silently.** Every feature stops working when a PAT expires
+  (they do by default), and until now you only found out by opening the panel. You now get one
+  Studio Pro notification per session, and the notification bell shows the error instead of
+  "Nothing needs your attention".
+
+---
+
+### Known limitations in this release
+
+- **Studio Pro pop-ups have no icon.** The notification API takes an image that can only be
+  built from a file or embedded resource, and the extension ships neither, so it relies on
+  Studio Pro's default — verified to display on Studio Pro 11.14. Should a version reject it,
+  pop-ups disable themselves after the first failure (logged once) and the in-panel bell carries
+  on unaffected; **Settings → Build → Pop-ups** shows which state you are in.
+- **Mendix links are stored by name.** Renaming a document or module in Studio Pro orphans the
+  link; Open then reports it rather than opening the wrong thing.
+- **Log search and clustering scale with the builds you scan.** Each build costs one or more
+  Azure DevOps calls. Fetches are capped at six concurrent and 200 KB per log, and completed
+  logs are cached for 30 minutes, but scanning 50 builds is meaningfully slower than 10.
+- **The generated Linux pipeline downloads mxbuild from Mendix's CDN.** The exact tarball name
+  has varied between major versions; if the download 404s, use the Windows template.
+
+---
+
+### Upgrading from 2.0.0
+
+Install the package that matches your Studio Pro (10.24, or 11.12 and later) and **restart
+Studio Pro** — the DLL is loaded in-process, so reloading
+the extension is not enough if an instance still holds the port. Confirm **Settings → Build →
+Backend** reads `3.0.0+sp10…` or `3.0.0+sp11…`.
+
+Connections, PATs, port settings, and work-item links all carry over untouched. Favorites
+start empty; this is the first release that has them.
+
+If the panel does not appear at all after upgrading, check the Studio Pro log for a composition
+error: this release requests `INotificationPopupService` in addition to the services 2.0.0 used.
+
+---
+
 ## 2.0.0 — 2026-08-01
 
 A security-focused release. Two vulnerabilities that could expose your Personal Access Token
