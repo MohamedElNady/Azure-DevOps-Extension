@@ -10,7 +10,7 @@ Works with **Azure DevOps Services (cloud)** and **Azure DevOps Server (on-premi
 
 [![Watch the 3.0 overview (3 min)](media/v3.0-video-cover.jpg)](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)
 
-▶ **[Watch the 3.0 overview](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)** — 3 minutes, 1080p. All data in the video is invented demo data.
+▶ **[Watch the 3.0 overview](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)** — 3 minutes, 1080p. All data in the video is invented demo data. Install the extension from the Mendix Marketplace.
 
 ---
 
@@ -128,6 +128,9 @@ Four things this does that no browser-based Azure DevOps client can:
 
 ## Installation
 
+Install the extension from the **Mendix Marketplace** — it's free. The Marketplace offers the right
+version for your Studio Pro automatically (10.24, or 11.12 and later).
+
 1. Open Mendix Studio Pro
 2. Go to **Marketplace** in the top menu
 3. Search for **Azure DevOps**
@@ -135,10 +138,10 @@ Four things this does that no browser-based Azure DevOps client can:
 5. Accept the trust dialog when prompted
 6. The **Azure DevOps** item appears in the **Extensions** menu
 
-**Installing manually:** download the module package for your Studio Pro from
-[Releases](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases). There is one for
-**Studio Pro 10.24** and one for **Studio Pro 11.12 and later**. They are not interchangeable.
-Use **App → Import module package**, then restart Studio Pro.
+> **Having a problem?** [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new)
+> on this repository with your Studio Pro version, your Azure DevOps version (cloud or Server), and
+> the steps to reproduce. Check [Troubleshooting](#troubleshooting) first — common problems are
+> answered there.
 
 ---
 
@@ -232,6 +235,9 @@ For detailed per-feature compatibility information, see
 ---
 
 ## Troubleshooting
+
+Not covered below? [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new) —
+include **Settings → Build** (it shows the exact version Studio Pro loaded).
 
 **The panel shows a status card instead of the app.**
 That page appears when the panel is opened outside Studio Pro, or before the extension finished
@@ -342,6 +348,7 @@ connections carry over; if they don't appear, re-add the connection once and it 
 
 ## Support
 
-- **Downloads & releases:** [github.com/MohamedElNady/Azure-DevOps-Extension/releases](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases)
+- **Install:** from the **Mendix Marketplace** inside Studio Pro (see [Installation](#installation))
+- **Release notes & overview video:** [github.com/MohamedElNady/Azure-DevOps-Extension/releases](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases)
 - **Bug reports:** [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new) with your Azure DevOps version, Studio Pro version, and steps to reproduce
 - **Feature requests:** [Open an issue](https://github.com/MohamedElNady/Azure-DevOps-Extension/issues/new) labelled `enhancement`
