@@ -1,5 +1,16 @@
 # Release Notes
 
+## 3.0.1 — 2026-10-03 (Studio Pro 11.12 and later)
+
+The Studio Pro 11.12+ package of 3.0.0, re-exported from Studio Pro 11.12 with the package ID
+that the Mendix Marketplace now requires. There are no functional changes.
+
+- **Studio Pro 11.12 and later** installs 3.0.1 from the Marketplace.
+- **Studio Pro 10.24** stays on 3.0.0. Nothing changes for it.
+- **Settings → Build** still reads `3.0.0+sp11…`, because the extension inside is the same build.
+
+---
+
 ## 3.0.0 — 2026-10-03
 
 A workflow release, built around one idea: the panel should know it is running inside Studio
@@ -239,8 +250,8 @@ which one loaded.
 
 ### Upgrading from 2.0.0
 
-Install the package that matches your Studio Pro (10.24, or 11.12 and later) and **restart
-Studio Pro** — the DLL is loaded in-process, so reloading
+Install the version that matches your Studio Pro from the Mendix Marketplace (3.0.0 for 10.24,
+3.0.1 for 11.12 and later) and **restart Studio Pro** — the DLL is loaded in-process, so reloading
 the extension is not enough if an instance still holds the port. Confirm **Settings → Build →
 Backend** reads `3.0.0+sp10…` or `3.0.0+sp11…`.
 

@@ -8,7 +8,7 @@ with your existing Azure DevOps credentials.
 
 Works with **Azure DevOps Services (cloud)** and **Azure DevOps Server (on-premises, 2019 and later)**.
 
-[![Watch the 3.0 overview (3 min)](media/v3.0-video-cover.jpg)](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)
+[![Watch the 3.0 overview (3 min)](https://raw.githubusercontent.com/MohamedElNady/Azure-DevOps-Extension/main/media/v3.0-video-cover.jpg)](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)
 
 ▶ **[Watch the 3.0 overview](https://github.com/MohamedElNady/Azure-DevOps-Extension/releases/download/v3.0.0/AzureDevOps_3.0_Release_16x9.mp4)** — 3 minutes, 1080p. All data in the video is invented demo data. Install the extension from the Mendix Marketplace.
 
@@ -119,7 +119,7 @@ Four things this does that no browser-based Azure DevOps client can:
 ## Requirements
 
 - **Mendix Studio Pro 10.24**, or **Studio Pro 11.12 (LTS) and later** — Windows only.
-  Each line has its own build; install the one matching your Studio Pro
+  Each line has its own build (see [Installation](#installation))
 - **Azure DevOps Services** (cloud) — any region
 - **Azure DevOps Server** 2019, 2020, or 2022 (on-premises)
 - A Personal Access Token (PAT) with the scopes listed below
@@ -128,8 +128,17 @@ Four things this does that no browser-based Azure DevOps client can:
 
 ## Installation
 
-Install the extension from the **Mendix Marketplace** — it's free. The Marketplace offers the right
-version for your Studio Pro automatically (10.24, or 11.12 and later).
+Install the extension from the **Mendix Marketplace** — it's free. Studio Pro downloads the
+version that matches it automatically:
+
+| Your Studio Pro | Marketplace version | Runtime |
+|---|---|---|
+| 10.24 | **3.0.0** | .NET 8 |
+| 11.12 (LTS) and later | **3.0.1** | .NET 10 |
+
+Both versions have the same features. They are not interchangeable, because the two Studio Pro
+lines run on different .NET versions and an extension runs inside Studio Pro itself. On the
+Marketplace website, the **Releases** tab lists both.
 
 1. Open Mendix Studio Pro
 2. Go to **Marketplace** in the top menu
@@ -265,10 +274,16 @@ Studio Pro last loaded it. If **DLL built** is newer than **Loaded at**, restart
 
 ## Release Notes
 
+### 3.0.1 — October 2026 (Studio Pro 11.12 and later)
+
+The Studio Pro 11.12+ package of 3.0.0, re-exported with the package ID the Mendix Marketplace
+now requires. No functional changes, and nothing changes for Studio Pro 10.24, which stays on
+3.0.0. **Settings → Build** still reads `3.0.0+sp11…`, because the extension inside is the same build.
+
 ### 3.0.0 — October 2026
 
 A workflow release, built around the panel knowing it runs inside Studio Pro with a Mendix app
-open. Full notes: `RELEASE_NOTES.md`.
+open. Full notes: [RELEASE_NOTES.md](https://github.com/MohamedElNady/Azure-DevOps-Extension/blob/main/RELEASE_NOTES.md).
 
 **Mendix-aware**
 - Branch context bar — the open app's Git branch, its pull request, and its latest build, with
@@ -297,7 +312,7 @@ scopes (see *Required PAT Scopes*); everything else works with your existing PAT
 
 ### 2.0.0 — August 2026
 
-A security-focused release. Full notes: `RELEASE_NOTES.md`.
+A security-focused release. Full notes: [RELEASE_NOTES.md](https://github.com/MohamedElNady/Azure-DevOps-Extension/blob/main/RELEASE_NOTES.md).
 
 **Security**
 - The local API now requires a per-session token, so no web page you visit can drive the extension or reach your credentials
